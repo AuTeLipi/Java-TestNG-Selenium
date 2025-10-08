@@ -1,0 +1,16 @@
+# Auto-detect text files and normalize line endings
+* text=auto
+
+# Force Java source files to use LF line endings
+*.java text eol=lf
+
+# Force XML files to use LF line endings
+*.xml text eol=lf
+
+# Markdown files
+*.md text eol=lf
+
+# Ignore binary files from line ending normalization
+*.png binary
+*.jpg binary
+*.gif binary

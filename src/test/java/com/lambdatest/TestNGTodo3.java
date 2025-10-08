@@ -5,6 +5,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.testng.Assert;
@@ -20,23 +21,9 @@ public class TestNGTodo3 {
 
     @BeforeMethod
     public void setup(Method m, ITestContext ctx) throws MalformedURLException {
-        String username = System.getenv("LT_USERNAME") == null ? "Your LT Username" : System.getenv("LT_USERNAME");
-        String authkey = System.getenv("LT_ACCESS_KEY") == null ? "Your LT AccessKey" : System.getenv("LT_ACCESS_KEY");
-        ;
-        String hub = "@hub.lambdatest.com/wd/hub";
+        System.setProperty("webdriver.chrome.driver", "/Users/pramod/Documents/driver/chromedriver");
+        driver = new ChromeDriver();
 
-        DesiredCapabilities caps = new DesiredCapabilities();
-        caps.setCapability("platform", "MacOS Catalina");
-        caps.setCapability("browserName", "Chrome");
-        caps.setCapability("version", "latest");
-        caps.setCapability("build", "TestNG With Java");
-        caps.setCapability("name", m.getName() + this.getClass().getName());
-        caps.setCapability("plugin", "git-testng");
-
-        String[] Tags = new String[] { "Feature", "Tag", "Moderate" };
-        caps.setCapability("tags", Tags);
-
-        driver = new RemoteWebDriver(new URL("https://" + username + ":" + authkey + hub), caps);
     }
 
     @Test
@@ -100,7 +87,6 @@ public class TestNGTodo3 {
 
     @AfterMethod
     public void tearDown() {
-        driver.executeScript("lambda-status=" + Status);
         driver.quit();
     }
 
