@@ -2,20 +2,18 @@ package com.lambdatest;
 
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
-import java.time.Duration;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.ITestContext;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+// Import WebDriverManager
 import io.github.bonigarcia.wdm.WebDriverManager;
 
 public class TestNGTodoMobile {
@@ -29,10 +27,10 @@ public class TestNGTodoMobile {
 
         ChromeOptions options = new ChromeOptions();
 
-        // Use a unique user-data-dir to avoid session errors
+        // Use a unique temp directory for user data to avoid session creation error
         options.addArguments("user-data-dir=/tmp/unique_chrome_profile_" + System.currentTimeMillis());
 
-        // Optional: disable extensions and info bars for cleaner test runs
+        // Optional: disable extensions and info bars
         options.addArguments("--disable-extensions");
         options.addArguments("--disable-infobars");
 
@@ -40,15 +38,22 @@ public class TestNGTodoMobile {
     }
 
     @Test
-    public void basicTest() {
+    public void basicTest() throws InterruptedException {
+        String spanText;
         System.out.println("Loading Url");
-
+        Thread.sleep(100);
         driver.get("https://lambdatest.github.io/sample-todo-app/");
 
-        System.out.println("Checking Boxes");
+        System.out.println("Checking Box");
         driver.findElement(By.name("li1")).click();
+
+        System.out.println("Checking Another Box");
         driver.findElement(By.name("li2")).click();
+
+        System.out.println("Checking Box");
         driver.findElement(By.name("li3")).click();
+
+        System.out.println("Checking Another Box");
         driver.findElement(By.name("li4")).click();
 
         driver.findElement(By.id("sampletodotext")).sendKeys(" List Item 6");
@@ -60,33 +65,37 @@ public class TestNGTodoMobile {
         driver.findElement(By.id("sampletodotext")).sendKeys(" List Item 8");
         driver.findElement(By.id("addbutton")).click();
 
+        System.out.println("Checking Another Box");
         driver.findElement(By.name("li1")).click();
+
+        System.out.println("Checking Another Box");
         driver.findElement(By.name("li3")).click();
+
+        System.out.println("Checking Another Box");
         driver.findElement(By.name("li7")).click();
+
+        System.out.println("Checking Another Box");
         driver.findElement(By.name("li8")).click();
 
         System.out.println("Entering Text");
         driver.findElement(By.id("sampletodotext")).sendKeys("Get Taste of Lambda and Stick to It");
+
         driver.findElement(By.id("addbutton")).click();
 
+        System.out.println("Checking Another Box");
         driver.findElement(By.name("li9")).click();
 
-        // Explicit wait for the new todo item to appear
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div/div/div/ul/li[9]/span")));
-
-        String spanText = driver.findElement(By.xpath("/html/body/div/div/div/ul/li[9]/span")).getText();
-        Assert.assertEquals(spanText, "Get Taste of Lambda and Stick to It");
-
+        // Assert the todo item was added
+        spanText = driver.findElementByXPath("/html/body/div/div/div/ul/li[9]/span").getText();
+        Assert.assertEquals("Get Taste of Lambda and Stick to It", spanText);
         Status = "passed";
+        Thread.sleep(800);
 
         System.out.println("TestFinished");
     }
 
     @AfterMethod
     public void tearDown() {
-        if (driver != null) {
-            driver.quit();
-        }
+        driver.quit();
     }
 }
