@@ -1,62 +1,72 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
 	<modelVersion>4.0.0</modelVersion>
+
 	<groupId>Java-TestNG-Selenium</groupId>
 	<artifactId>Java-TestNG-Selenium</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+
 	<build>
-		<sourceDirectory>Java-TestNG-Selenium/src</sourceDirectory>
+		<!-- Use standard Maven directory layout -->
+		<sourceDirectory>src/main/java</sourceDirectory>
+		<testSourceDirectory>src/test/java</testSourceDirectory>
+
 		<resources>
 			<resource>
-				<directory>Java-TestNG-Selenium/src</directory>
+				<directory>src/main/resources</directory>
 				<excludes>
 					<exclude>**/*.java</exclude>
 				</excludes>
 			</resource>
 		</resources>
+
+		<testResources>
+			<testResource>
+				<directory>src/test/resources</directory>
+			</testResource>
+		</testResources>
+
 		<plugins>
+			<!-- Updated maven-compiler-plugin -->
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.7.0</version>
+				<version>3.10.1</version>
 				<configuration>
-					<release>10</release>
+					<release>21</release>
 				</configuration>
 			</plugin>
+
+			<!-- Updated maven-surefire-plugin for running tests -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.19.1</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>test</goal>
-						</goals>
-					</execution>
-				</executions>
+				<version>3.0.0</version>
 				<configuration>
 					<suiteXmlFiles>
-						<!--suppress UnresolvedMavenProperty -->
 						<suiteXmlFile>${suite}</suiteXmlFile>
 					</suiteXmlFiles>
 				</configuration>
 			</plugin>
 		</plugins>
-
 	</build>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-java</artifactId>
 			<version>3.13.0</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.testng/testng -->
+
 		<dependency>
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
 			<version>6.14.3</version>
+			<scope>test</scope>
 		</dependency>
-
 	</dependencies>
 
 </project>
