@@ -21,7 +21,7 @@ public class TestNGTodo1 {
 
     @BeforeMethod
     public void setup(Method m, ITestContext ctx) throws MalformedURLException {
-        System.setProperty("webdriver.chrome.driver", "/Users/pramod/Documents/driver/chromedriver");
+        System.setProperty("webdriver.chrome.driver", "/Users/Home/Documents/driver/chromedriver-win64/chromedriver.exe");
         driver = new ChromeDriver();
 
     }
