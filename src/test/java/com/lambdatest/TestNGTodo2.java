@@ -1,7 +1,10 @@
 package com.lambdatest;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -22,17 +25,14 @@ public class TestNGTodo2 {
     private String Status = "failed";
 
     @BeforeMethod
-    public void setup(Method m, ITestContext ctx) throws MalformedURLException {
+    public void setup(Method m, ITestContext ctx) throws MalformedURLException, IOException {
         WebDriverManager.chromedriver().setup();
 
         ChromeOptions options = new ChromeOptions();
 
-        // Use a unique temp directory for user data to avoid session creation error
-        options.addArguments("user-data-dir=/tmp/unique_chrome_profile_" + System.currentTimeMillis());
-
-        // Optional: disable extensions and info bars
-        options.addArguments("--disable-extensions");
-        options.addArguments("--disable-infobars");
+        // Create a unique temporary directory for Chrome user data
+        Path userDataDir = Files.createTempDirectory("chrome-user-data");
+        options.addArguments("--user-data-dir=" + userDataDir.toAbsolutePath().toString());
 
         driver = new ChromeDriver(options);
     }
