@@ -2,17 +2,20 @@ package com.lambdatest;
 
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
+import java.time.Duration;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.ITestContext;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-// Import WebDriverManager
 import io.github.bonigarcia.wdm.WebDriverManager;
 
 public class TestNGTodo3 {
@@ -22,28 +25,30 @@ public class TestNGTodo3 {
 
     @BeforeMethod
     public void setup(Method m, ITestContext ctx) throws MalformedURLException {
-        // Setup ChromeDriver using WebDriverManager
         WebDriverManager.chromedriver().setup();
-        driver = new ChromeDriver();
+
+        ChromeOptions options = new ChromeOptions();
+
+        // Use unique user-data-dir to avoid session issues
+        options.addArguments("user-data-dir=/tmp/unique_chrome_profile_" + System.currentTimeMillis());
+
+        // Optional: disable extensions and infobars
+        options.addArguments("--disable-extensions");
+        options.addArguments("--disable-infobars");
+
+        driver = new ChromeDriver(options);
     }
 
     @Test
-    public void basicTest() throws InterruptedException {
-        String spanText;
+    public void basicTest() {
         System.out.println("Loading Url");
-        Thread.sleep(100);
+
         driver.get("https://lambdatest.github.io/sample-todo-app/");
 
-        System.out.println("Checking Box");
+        System.out.println("Checking Boxes");
         driver.findElement(By.name("li1")).click();
-
-        System.out.println("Checking Another Box");
         driver.findElement(By.name("li2")).click();
-
-        System.out.println("Checking Box");
         driver.findElement(By.name("li3")).click();
-
-        System.out.println("Checking Another Box");
         driver.findElement(By.name("li4")).click();
 
         driver.findElement(By.id("sampletodotext")).sendKeys(" List Item 6");
@@ -55,39 +60,34 @@ public class TestNGTodo3 {
         driver.findElement(By.id("sampletodotext")).sendKeys(" List Item 8");
         driver.findElement(By.id("addbutton")).click();
 
-        System.out.println("Checking Another Box");
         driver.findElement(By.name("li1")).click();
-
-        System.out.println("Checking Another Box");
         driver.findElement(By.name("li3")).click();
-
-        System.out.println("Checking Another Box");
         driver.findElement(By.name("li7")).click();
-
-        System.out.println("Checking Another Box");
         driver.findElement(By.name("li8")).click();
 
         System.out.println("Entering Text");
         driver.findElement(By.id("sampletodotext")).sendKeys("Get Taste of Lambda and Stick to It");
-
         driver.findElement(By.id("addbutton")).click();
 
-        System.out.println("Checking Another Box");
         driver.findElement(By.name("li9")).click();
 
-        // Assert the todo item was added
-        spanText = driver.findElementByXPath("/html/body/div/div/div/ul/li[9]/span").getText();
-        Assert.assertEquals("Get Taste of Lambda and Stick to It", spanText);
+        // Use explicit wait for new item visibility
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div/div/div/ul/li[9]/span")));
+
+        String spanText = driver.findElement(By.xpath("/html/body/div/div/div/ul/li[9]/span")).getText();
+        Assert.assertEquals(spanText, "Get Taste of Lambda and Stick to It");
+
         Status = "passed";
-        Thread.sleep(800);
 
         System.out.println("TestFinished");
-
     }
 
     @AfterMethod
     public void tearDown() {
-        driver.quit();
+        if (driver != null) {
+            driver.quit();
+        }
     }
 
 }

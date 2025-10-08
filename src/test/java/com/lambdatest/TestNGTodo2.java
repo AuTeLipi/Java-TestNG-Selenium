@@ -2,10 +2,14 @@ package com.lambdatest;
 
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
+import java.time.Duration;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.ITestContext;
 import org.testng.annotations.AfterMethod;
@@ -22,28 +26,30 @@ public class TestNGTodo2 {
 
     @BeforeMethod
     public void setup(Method m, ITestContext ctx) throws MalformedURLException {
-        // Use WebDriverManager to setup ChromeDriver
         WebDriverManager.chromedriver().setup();
-        driver = new ChromeDriver();
+
+        ChromeOptions options = new ChromeOptions();
+
+        // Use a unique temp directory for user data to avoid session creation error
+        options.addArguments("user-data-dir=/tmp/unique_chrome_profile_" + System.currentTimeMillis());
+
+        // Optional: disable extensions and info bars
+        options.addArguments("--disable-extensions");
+        options.addArguments("--disable-infobars");
+
+        driver = new ChromeDriver(options);
     }
 
     @Test
-    public void basicTest() throws InterruptedException {
-        String spanText;
+    public void basicTest() {
         System.out.println("Loading Url");
 
         driver.get("https://lambdatest.github.io/sample-todo-app/");
 
-        System.out.println("Checking Box");
+        System.out.println("Checking Boxes");
         driver.findElement(By.name("li1")).click();
-
-        System.out.println("Checking Another Box");
         driver.findElement(By.name("li2")).click();
-
-        System.out.println("Checking Box");
         driver.findElement(By.name("li3")).click();
-
-        System.out.println("Checking Another Box");
         driver.findElement(By.name("li4")).click();
 
         driver.findElement(By.id("sampletodotext")).sendKeys(" List Item 6");
@@ -55,37 +61,33 @@ public class TestNGTodo2 {
         driver.findElement(By.id("sampletodotext")).sendKeys(" List Item 8");
         driver.findElement(By.id("addbutton")).click();
 
-        System.out.println("Checking Another Box");
         driver.findElement(By.name("li1")).click();
-
-        System.out.println("Checking Another Box");
         driver.findElement(By.name("li3")).click();
-
-        System.out.println("Checking Another Box");
         driver.findElement(By.name("li7")).click();
-
-        System.out.println("Checking Another Box");
         driver.findElement(By.name("li8")).click();
 
         System.out.println("Entering Text");
         driver.findElement(By.id("sampletodotext")).sendKeys("Get Taste of Lambda and Stick to It");
-
         driver.findElement(By.id("addbutton")).click();
 
-        System.out.println("Checking Another Box");
         driver.findElement(By.name("li9")).click();
 
-        // Assert the todo item was added
-        spanText = driver.findElementByXPath("/html/body/div/div/div/ul/li[9]/span").getText();
-        Assert.assertEquals("Get Taste of Lambda and Stick to It", spanText);
-        Status = "passed";
-        Thread.sleep(150);
+        // Explicit wait for the new todo item text to be visible
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html/body/div/div/div/ul/li[9]/span")));
 
-        System.out.println("TestFinished");
+        String spanText = driver.findElement(By.xpath("/html/body/div/div/div/ul/li[9]/span")).getText();
+        Assert.assertEquals(spanText, "Get Taste of Lambda and Stick to It");
+
+        Status = "passed";
+
+        System.out.println("Test Finished");
     }
 
     @AfterMethod
     public void tearDown() {
-        driver.quit();
+        if (driver != null) {
+            driver.quit();
+        }
     }
 }
