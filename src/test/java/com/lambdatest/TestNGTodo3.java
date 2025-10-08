@@ -2,17 +2,18 @@ package com.lambdatest;
 
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
-import java.net.URL;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.testng.Assert;
 import org.testng.ITestContext;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+// Import WebDriverManager
+import io.github.bonigarcia.wdm.WebDriverManager;
 
 public class TestNGTodo3 {
 
@@ -21,9 +22,9 @@ public class TestNGTodo3 {
 
     @BeforeMethod
     public void setup(Method m, ITestContext ctx) throws MalformedURLException {
-        System.setProperty("webdriver.chrome.driver", "/Users/Home/Documents/driver/chromedriver-win64/chromedriver.exe");
+        // Setup ChromeDriver using WebDriverManager
+        WebDriverManager.chromedriver().setup();
         driver = new ChromeDriver();
-
     }
 
     @Test
@@ -74,8 +75,7 @@ public class TestNGTodo3 {
         System.out.println("Checking Another Box");
         driver.findElement(By.name("li9")).click();
 
-        // Let's also assert that the todo we added is present in the list.
-
+        // Assert the todo item was added
         spanText = driver.findElementByXPath("/html/body/div/div/div/ul/li[9]/span").getText();
         Assert.assertEquals("Get Taste of Lambda and Stick to It", spanText);
         Status = "passed";
