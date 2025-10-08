@@ -1,14 +1,13 @@
 package com.lambdatest;
 
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.net.URL;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.testng.Assert;
 import org.testng.ITestContext;
@@ -16,23 +15,19 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-// Import WebDriverManager
-import io.github.bonigarcia.wdm.WebDriverManager;
-
 public class TestNGTodo1 {
 
     private RemoteWebDriver driver;
     private String Status = "failed";
 
     @BeforeMethod
-    public void setup(Method m, ITestContext ctx) throws MalformedURLException, IOException {
-        WebDriverManager.chromedriver().setup();
+    public void setup(Method m, ITestContext ctx) {
+        System.setProperty("webdriver.chrome.driver", "/usr/bin/chromedriver");
 
         ChromeOptions options = new ChromeOptions();
-
-        // Create a unique temporary directory for Chrome user data
-        Path userDataDir = Files.createTempDirectory("chrome-user-data");
-        options.addArguments("--user-data-dir=" + userDataDir.toAbsolutePath().toString());
+        options.addArguments("--headless=new");  // Use new headless mode (Chrome 109+)
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
 
         driver = new ChromeDriver(options);
     }
@@ -86,17 +81,20 @@ public class TestNGTodo1 {
         System.out.println("Checking Another Box");
         driver.findElement(By.name("li9")).click();
 
-        // Assert the todo item was added
+        // Let's also assert that the todo we added is present in the list.
+
         spanText = driver.findElementByXPath("/html/body/div/div/div/ul/li[9]/span").getText();
         Assert.assertEquals("Get Taste of Lambda and Stick to It", spanText);
         Status = "passed";
         Thread.sleep(150);
 
         System.out.println("TestFinished");
+
     }
 
     @AfterMethod
     public void tearDown() {
         driver.quit();
     }
+
 }
